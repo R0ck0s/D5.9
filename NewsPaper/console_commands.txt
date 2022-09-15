@@ -1,0 +1,59 @@
+1) Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+from news.models import *
+User.objects.create(username = 'Barry')
+User.objects.create(username = 'Tonny')
+
+2. Создать два объекта модели Author, связанные с пользователями.
+at1 = Author.objects.create(user_id = 1)
+at2 = Author.objects.create(user_id = 2)
+
+3. Добавить 4 категории в модель Category.
+Category.objects.create(category_name = "World")
+Category.objects.create(category_name = "Politic")
+Category.objects.create(category_name = "Sport")
+Category.objects.create(category_name = "IT")
+
+4. Добавить 2 статьи и 1 новость.
+post1 = Post.objects.create(author_id = 1, post_type = "AR", post_title = "DJI выпустила экшн-камеру Osmo Action 3", post_text = "Компания DJI анонсировала экшн-камеру Osmo Action 3, которая получила быстросъёмную конструкцию для простого горизонтального и вертикального крепления, а также два сенсорных дисплея — во фронтальной и тыльной частях.")
+post2 = Post.objects.create(author_id = 2, post_type = "AR", post_title = "Джокович обратился к финалисту US Open 2022 Рууду", post_text = "Сербский теннисист Новак Джокович обратился к норвежскому теннисисту Касперу Рууду, который уступил испанцу Карлосу Алькарасу в финале Открытого чемпионата США.")
+post3 = Post.objects.create(author_id = 2, post_type = "NW", post_title = "Выборы в Швеции: правые улучшили результат", post_text = "На парламентских выборах в Швеции с минимальным перевесом лидирует блок оппозиционного правого альянса. Окончательные результаты будут известны к утру понедельника. ")
+
+5. Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+PostCategory.objects.create(post_id = 1, category_id = 4)
+PostCategory.objects.create(post_id = 2, category_id = 3)
+PostCategory.objects.create(post_id = 3, category_id = 1)
+PostCategory.objects.create(post_id = 3, category_id = 2)
+
+6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+comm1 = Comment.objects.create(post_id = 1, user_id = 1, comm_text = 'Отличные новости')
+comm2 = Comment.objects.create(post_id = 2, user_id = 1, comm_text = 'Класс')
+comm3 = Comment.objects.create(post_id = 3, user_id = 2, comm_text = 'Ничего интересного')
+comm4 = Comment.objects.create(post_id = 1, user_id = 2, comm_text = 'Ждем!')
+comm5 = Comment.objects.create(post_id = 3, user_id = 1, comm_text = 'Будет интересно')
+comm6 = Comment.objects.create(post_id = 1, user_id = 2, comm_text = 'Ничего интересно')
+
+7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+[post1.like() for _ in range(5)]
+[post2.like() for _ in range(8)]
+[post3.like() for _ in range(3)]
+[comm1.like() for _ in range(6)]
+[comm2.like() for _ in range(4)]
+[comm3.like() for _ in range(11)]
+[comm4.dislike() for _ in range(7)]
+[comm5.like() for _ in range(2)]
+[comm6.dislike() for _ in range(5)]
+
+8. Обновить рейтинги пользователей.
+[Author.objects.all()[_].update_rating() for _ in range(Author.objects.count())]
+
+9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+User.objects.all().order_by('author__author_rating').values('username','author__author_rating').last()
+
+10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+best_post = Post.objects.all().order_by('post_rating').last()
+best_post_info = Post.objects.all().order_by('post_rating').values('post_date','author__user__username', 'post_rating', 'post_title').last()
+best_post_info['post_title'] = Post.objects.all().order_by('post_rating').last().preview()
+best_post_info
+
+11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+best_post.comment_set.all().values('comm_date', 'user__username', 'comm_rating', 'comm_text')
