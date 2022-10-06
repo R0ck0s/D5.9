@@ -8,6 +8,11 @@ News
 
 {% block content %}
     <h1>News ({{ news|length }})</h1>
+
+    {%if is_not_author %}
+        <button><a href="/news/upgrade/"> Стать автором </a></button>
+    {% endif %}
+
     <hr>
     {% if news %}
         <table>
