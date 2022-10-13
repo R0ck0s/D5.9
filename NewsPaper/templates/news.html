@@ -9,6 +9,7 @@ News
 {% block content %}
     <h1>News ({{ news|length }})</h1>
 
+
     {%if is_not_author %}
         <button><a href="/news/upgrade/"> Стать автором </a></button>
     {% endif %}
@@ -20,6 +21,7 @@ News
                 <td>Заголовок</td>
                 <td>Дата</td>
                 <td>Описание</td>
+                <td>Категория</td>
             </tr>
 
             {% for post in news %}
@@ -27,6 +29,11 @@ News
                 <td>{{ post.post_title|censor }}</td>
                 <td>{{ post.post_date|date:'d.M.Y' }}</td>
                 <td>{{ post.post_text|truncatewords:20|censor }}</td>
+                <td>
+                    {% for i in post.category.all %}
+                        {{ i.category_name }}
+                    {% endfor %}
+                </td>
             </tr>
             {% endfor %}
         </table>

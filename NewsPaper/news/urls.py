@@ -1,4 +1,4 @@
-from .views import NewsList, PostDetail, PostSearch, PostCreate, PostUpdate, PostDelete, upgrade_user
+from .views import NewsList, PostDetail, PostSearch, PostCreate, PostUpdate, PostDelete, upgrade_user, subscribe
 from django.urls import path
 
 
@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:pk>/delete/', PostDelete.as_view(), name='post_delete'),
     path('search/', PostSearch.as_view(), name='post_search'),
     path('upgrade/', upgrade_user, name='upgrade'),
+    path('subscribes/<int:i>', subscribe, name='subscribe'),
 ]

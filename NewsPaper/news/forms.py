@@ -4,6 +4,7 @@ from .models import Post
 from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
 
+
 class PostForm(forms.ModelForm):
     class Meta:
        model = Post
@@ -18,6 +19,7 @@ class PostForm(forms.ModelForm):
         cleaned_data = super().clean()
         title = cleaned_data.get('post_title')
         text = cleaned_data.get('post_text')
+
         if text == title:
             raise ValidationError(
                 {'text': 'Текст публикации не должен быть идентичен её названию'}
