@@ -3,16 +3,14 @@ from datetime import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Category, Subscribers, Author
+from .models import Post, Category, Author
 from .filters import PostFilter
 from .forms import PostForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
+
 
 
 
@@ -48,8 +46,8 @@ class PostSearch(ListView):
 
 class PostDetail(DetailView):
     model = Post
-    template_name = 'post.html'
-    context_object_name = 'post'
+    template_name = 'post_detail.html'
+    context_object_name = 'post_detail'
 
 
 class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -73,10 +71,10 @@ class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
                 post.save()
 
             id_categories = self.request.POST.getlist('category')
-            id_post = Post.objects.last()
-            subscribers_mail_sent(id_categories, id_post)
 
-            return super().form_valid(form)
+            for i in id_categories:
+                cat = Category.objects.get(pk=i)
+                post.category.add(cat)
 
         else:
             print('Вы привысили лимит на написание новостей. Не больше 3 в сутки')
@@ -108,38 +106,30 @@ def upgrade_user(request):
     return redirect('/news/')
 
 
-# Рассылка новости пользователям, подписавшимся на категорию
-def subscribers_mail_sent(cat_id, post_id):
+class CategoryListView(ListView):
+    model = Post
+    template_name = 'category_list.html'
+    context_object_name = 'category_news_list'
 
-    for cat in cat_id:
-        emails = User.objects.filter(subscribers__category_id=cat).values('email').distinct()
-        email_list = [item['email'] for item in emails]
-        cat_name = Category.objects.get(pk = cat)
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, id=self.kwargs['pk'])
+        queryset = Post.objects.filter(category=self.category).order_by('-post_date')
+        return queryset
 
-        html_content = render_to_string(
-            'news_created.html',
-            {
-                'post_id': post_id,
-            }
-        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subscriber'] = self.request.user not in self.category.subscribers.all()
+        context['category'] = self.category
+        return context
 
-        msg = EmailMultiAlternatives(
-            subject=f'Появилась новость в разделе {cat_name}',
-            from_email='skilltests77@yandex.ru',
-            to=email_list )
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
 
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
+    message = 'Вы успешно подписались на рассылку новостей категории'
+    return render(request, 'post_created_email.html', {'category': category, 'message': message})
 
-
-# Подписка на категорию
-@login_required()
-def subscribe(request, i):
-    s_user = User.objects.get(username=request.user)
-
-    if s_user:
-        Subscribers.objects.create(category_id = i, user_id = s_user.id)
-
-    return redirect('/news/')
 
 

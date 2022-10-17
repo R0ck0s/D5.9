@@ -13,7 +13,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 
 INSTALLED_APPS = [
-    'news',
+    'news.apps.NewsConfig',
     'accounts',
     'django_filters',
     'django.contrib.admin',
@@ -110,6 +110,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
+
+SITE_URL = 'http://127.0.0.1:8000'
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/news/'

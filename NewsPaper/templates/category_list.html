@@ -7,17 +7,20 @@ News
 {% endblock title %}
 
 {% block content %}
-    <h1>News ({{ news|length }})</h1>
+    <h1>News ({{ category_news_list|length }})</h1>
 
+    {% if is_not_subscriber %}
+        <p class="text-center"><a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn-sm">Подписаться</a></p>
+    {% endif %}
 
     {%if is_not_author %}
         <button><a href="/news/upgrade/"> Стать автором </a></button>
     {% endif %}
 
     <hr>
-    {% if news %}
+    {% if category_news_list %}
         <ul class="list-group list-group-flush">
-            {% for post in news %}
+            {% for post in category_news_list %}
                 <li class="list-group-item">
                     <small class="fw-bold">{{ post.post_date|date:'d.M.Y' }}</small>
                     <a href="{% url 'post_detail' post.id %}">{{ post.post_title|censor }}</a>
@@ -31,6 +34,28 @@ News
                 </li>
             {% endfor %}
         </ul>
+
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <td>Заголовок</td>-->
+<!--                <td>Дата</td>-->
+<!--                <td>Описание</td>-->
+<!--                <td>Категория</td>-->
+<!--            </tr>-->
+
+<!--            {% for post in category_news_list %}-->
+<!--            <tr>-->
+<!--                <td>{{ post.post_title|censor }}</td>-->
+<!--                <td>{{ post.post_date|date:'d.M.Y' }}</td>-->
+<!--                <td>{{ post.post_text|truncatewords:20|censor }}</td>-->
+<!--                <td>-->
+<!--                    {% for category in post.category.all %}-->
+<!--                        <a href="{% url 'category_list' category.id %}">{{ category }}</a>-->
+<!--                    {% endfor %}-->
+<!--                </td>-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </table>-->
     {% else %}
         <h2>"Новостей нет"</h2>
     {% endif %}
