@@ -12,6 +12,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'weekly_posts_notification': {
         'task': 'news.tasks.week_news_notification',
-        'schedule': crontab(),
+        'schedule': crontab(hour=8, minute=0, day_of_week='monday'),
     },
 }
