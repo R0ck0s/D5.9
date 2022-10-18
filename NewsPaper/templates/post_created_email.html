@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<h2>Здравствуй! Новая link в твоём любимом разделе!</h2>
-<p>{{ text }}</p>
+<h2>Здравствуй! Новая статья {{ post.post_title }} в твоём любимом разделе!</h2>
+<p>{{ text|truncatewords:20 }} <a href="{{ link }}">читать дальше</a></p>
 </body>
 </html>

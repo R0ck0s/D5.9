@@ -57,6 +57,3 @@ best_post_info
 
 11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
 best_post.comment_set.all().values('comm_date', 'user__username', 'comm_rating', 'comm_text')
-
-
-<li><a href="{{ link }}{{ post.get_absolute_url }}">{{ post.title }}</a></li>

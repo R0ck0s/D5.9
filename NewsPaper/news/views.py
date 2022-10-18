@@ -11,7 +11,7 @@ from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 
-
+from .tasks import notify_about_new_post
 
 
 class NewsList(ListView):
@@ -76,6 +76,10 @@ class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
                 cat = Category.objects.get(pk=i)
                 post.category.add(cat)
 
+            notify_about_new_post(post)
+
+
+
         else:
             print('Вы привысили лимит на написание новостей. Не больше 3 в сутки')
 
@@ -127,9 +131,10 @@ def subscribe(request, pk):
     user = request.user
     category = Category.objects.get(id=pk)
     category.subscribers.add(user)
-
     message = 'Вы успешно подписались на рассылку новостей категории'
     return render(request, 'post_created_email.html', {'category': category, 'message': message})
+
+
 
 
 
