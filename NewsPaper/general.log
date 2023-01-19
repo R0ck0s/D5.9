@@ -1,0 +1,6 @@
+2023-01-18 14:26:22,346 INFO autoreload Watching for file changes with StatReloader
+2023-01-18 14:26:28,051 INFO basehttp "GET /news/ HTTP/1.1" 200 6478
+2023-01-18 14:26:33,070 INFO basehttp "GET /news/1 HTTP/1.1" 200 2646
+2023-01-18 14:27:10,912 INFO basehttp "GET /news/search/ HTTP/1.1" 200 5878
+2023-01-18 14:28:59,459 INFO autoreload /home/Nett/PycharmProjects/NewsPortal/NewsPaper/NewsPaper/settings.py changed, reloading.
+2023-01-18 14:45:11,558 INFO autoreload Watching for file changes with StatReloader
