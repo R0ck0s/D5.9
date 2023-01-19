@@ -2,7 +2,7 @@ from celery import shared_task
 from datetime import *
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
-from NewsPaper import settings
+from NewsPaper import  settings
 from NewsPaper.settings import SITE_URL
 
 from news.models import Post, Category

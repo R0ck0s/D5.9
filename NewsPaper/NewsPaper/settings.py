@@ -1,5 +1,6 @@
 
 import os
+import logging
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -73,6 +74,119 @@ DATABASES = {
     }
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'style' : '{',
+    'formatters': {
+        'debug': {
+            'format': '%(asctime)s %(levelname)s %(message)s'
+        },
+        'warning': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s'
+        },
+        'error': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s'
+        },
+        'critical': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s'
+        },
+        'general_security': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
+        },
+        'file_errors': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s'
+        },
+        'mail': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console_debug': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'debug'
+        },
+        'console_warning': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning'
+        },
+        'console_error': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'error'
+        },
+        'console_critical': {
+            'level': 'CRITICAL',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'critical'
+        },
+        'file_general': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'general_security',
+        },
+        'file_error': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'file_errors',
+        },
+        'file_security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'general_security',
+        },
+        'send_mail': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'mail',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console_debug', 'console_warning', 'console_error', 'console_critical', 'file_general'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file_error', 'send_mail'],
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['file_error', 'send_mail'],
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['file_error'],
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['file_error'],
+            'propagate': True,
+        },
+        'django.serurity': {
+            'handlers': ['file_security'],
+            'propagate': True,
+        },
+    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -115,6 +229,13 @@ SITE_URL = 'http://127.0.0.1:8000'
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/news/'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
